@@ -10,22 +10,34 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
 )
 
 func newRouter() *httprouter.Router {
-	mux := httprouter.New() 
+	mux := httprouter.New()
 
-	mux.GET("/youtube/channel/stats", getChannelStats())
+	err := godotenv.Load("local.env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+
+	ytApiKey := os.Getenv("YOUTUBE_API_KEY")
+
+	if ytApiKey == "" {
+		log.Fatal("youtube API key not provided")
+	}
+
+	mux.GET("/youtube/channel/stats", getChannelStats(ytApiKey))
 
 	return mux
 }
 
-func getChannelStats() httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		w.Write([]byte("response!"))
-	}
-}
+// func getChannelStats() httprouter.Handle {
+// 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+// 		w.Write([]byte("response!"))
+// 	}
+// }
 
 func main() {
 	srv := &http.Server{
