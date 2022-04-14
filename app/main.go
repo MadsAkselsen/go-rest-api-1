@@ -17,11 +17,6 @@ import (
 func newRouter() *httprouter.Router {
 	mux := httprouter.New()
 
-	err := godotenv.Load("local.env")
-	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
-	}
-
 	ytApiKey := os.Getenv("YOUTUBE_API_KEY")
 
 	if ytApiKey == "" {
@@ -40,6 +35,11 @@ func newRouter() *httprouter.Router {
 // }
 
 func main() {
+	err := godotenv.Load("local.env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+	
 	srv := &http.Server{
 		Addr: ":10101",
 		Handler: newRouter(),
